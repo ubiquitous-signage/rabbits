@@ -6,13 +6,15 @@ WORKDIR /usr/src/app
 RUN apt-get update
 
 # port audio
-RUN apt-get -y install libasound-dev
+RUN apt-get -y install libasound-dev  alsa-utils sox libsox-fmt-all
 RUN wget http://www.portaudio.com/archives/pa_stable_v19_20140130.tgz
 RUN tar zxvf pa_stable_v19_20140130.tgz
 WORKDIR /usr/src/app/portaudio
 RUN ./configure && make
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
 RUN make install
+
+RUN echo 'dtparam=audio=on' > /boot/config.txt
 
 # python dependencies
 RUN pip install --upgrade google-cloud SpeechRecognition pyaudio
@@ -30,4 +32,4 @@ ENV DOCOMO_APIKEY=$DOCOMO_APIKEY
 
 WORKDIR /usr/src/app/rabbits/word_cloud
 CMD [ "python", "./main.py" ]
-# CMD [ "/bin/bash"]
+# CMD [ "sh", "/bin/bash"]
