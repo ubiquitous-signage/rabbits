@@ -40,8 +40,11 @@ def post(words):
         'Count': 1, 
       }
     )
-  r = requests.post(URL, data=json.dumps(payload), headers=headers)
-  print('post status code: ' + str(r))
+  try:
+    r = requests.post(URL, data=json.dumps(payload), headers=headers)
+    print('post status code: ' + str(r))
+  except requests.exceptions.ConnectionError:
+    print("please run hamster!")
 
 if __name__ == '__main__':
   loop()
