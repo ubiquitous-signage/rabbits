@@ -1,5 +1,6 @@
 import recognizer
 import text_analytics
+import sensitive_filter
 import os
 import requests
 import json
@@ -9,14 +10,20 @@ URL="http://localhost:9000/api/word-cloud"
 def loop():
   while True:
     run()
+    print('---------------------------------------------')
 
 def run():
   text = recognizer.live(recognizer.API_OPTIONS.GOOGLE_CLOUD)
   if text == None:
     return
   words = text_analytics.syntax_text(text)
-  print(words)
-  post(words)
+  if not words:
+    print('could not analyze words')
+    return
+  print('recognized words: ' + str(words))
+  filtered_words = sensitive_filter.filter(words)
+  print('filterd words:    ' + str(filtered_words))
+  post(filtered_words)
 
 def post(words):
   headers = {
@@ -34,7 +41,8 @@ def post(words):
       }
     )
   r = requests.post(URL, data=json.dumps(payload), headers=headers)
-  print(r)
+  print('post status code: ' + str(r))
 
 if __name__ == '__main__':
   loop()
+  # run()

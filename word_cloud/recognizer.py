@@ -8,7 +8,7 @@ from os import path
 BING_KEY = os.environ["MS_BING_SPEECH_API_KEY"]  # Microsoft Bing Voice Recognition API keys 32-character lowercase hexadecimal strings
 IBM_USERNAME = os.environ["IBM_USERNAME"]
 IBM_PASSWORD = os.environ["IBM_PASSWORD"]
-GOOGLE_CLOUD_SPEECH_CREDENTIALS_PATH = 'ubiquitous-signage-36357d9e0e06.json'
+GOOGLE_CLOUD_SPEECH_CREDENTIALS_PATH = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
 
 ENRGY_THRESOHLD = 0 # associated with the perceived loudness of the sound; if 0, automatically ajjusted
 TIMEOUT_SEC = 10 # maximum number of seconds that this will allow a phrase to continue
