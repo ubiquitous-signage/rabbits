@@ -18,6 +18,11 @@ or you can just
 export MS_TEXT_ANALYTICS_API_KEY=
 ```
 
+### pip install
+```
+pip install -r requirements.txt
+```
+
 ### run
 ```
 python main.py
