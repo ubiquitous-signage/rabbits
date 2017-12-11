@@ -3,6 +3,7 @@ import speech_recognition as sr
 import os
 import enum
 import json
+import time
 from os import path
 
 BING_KEY = os.environ["MS_BING_SPEECH_API_KEY"]  # Microsoft Bing Voice Recognition API keys 32-character lowercase hexadecimal strings
@@ -11,7 +12,7 @@ IBM_PASSWORD = os.environ["IBM_PASSWORD"]
 GOOGLE_CLOUD_SPEECH_CREDENTIALS_PATH = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
 
 ENRGY_THRESOHLD = 0 # associated with the perceived loudness of the sound; if 0, automatically ajjusted
-TIMEOUT_SEC = 10 # maximum number of seconds that this will allow a phrase to continue
+TIMEOUT_SEC = 4 # maximum number of seconds that this will allow a phrase to continue
 LANGUAGE = 'ja-JP'
 
 API_OPTIONS = enum.Enum("API_OPTIONS", "BING GOOGLE GOOGLE_CLOUD IBM")
@@ -37,6 +38,17 @@ def recorded(API_OPTION,file_name):
     audio = r.record(source)  # read the entire audio file
     BING_KEY = os.environ["MS_BING_SPEECH_API_KEY"]  # Microsoft Bing Voice Recognition API keys 32-character lowercase hexadecimal strings
   return recognize(r,audio,API_OPTION)
+
+def callback(r,audio):
+  try:
+    text = r.recognize_google(audio, language=LANGUAGE)
+    print("Google Speech Recognition: " + text)
+    return text
+  except sr.UnknownValueError:
+    print("Google Speech Recognition could not understand audio")
+    return None
+  except sr.RequestError as e:
+    print("Could not request results from Google Speech Recognition service; {0}".format(e))
 
 def recognize(r, audio, API_OPTION):
   if API_OPTION is API_OPTIONS.BING:
@@ -85,10 +97,25 @@ def recognize(r, audio, API_OPTION):
     except sr.RequestError as e:
       print("Could not request results from IBM Speech to Text service; {0}".format(e)) 
 
+
 if __name__ == "__main__":
   api = API_OPTIONS.BING
   # print(live(api))
-  recorded(API_OPTIONS.BING, "records/test_1.wav")
-  recorded(API_OPTIONS.GOOGLE, "records/test_1.wav")
-  recorded(API_OPTIONS.GOOGLE_CLOUD, "records/test_1.wav")
-  recorded(API_OPTIONS.IBM, "records/test_1.wav")
+  # recorded(API_OPTIONS.BING, "records/test_1.wav")
+  # recorded(API_OPTIONS.GOOGLE, "records/test_1.wav")
+  # recorded(API_OPTIONS.GOOGLE_CLOUD, "records/test_1.wav")
+  # recorded(API_OPTIONS.IBM, "records/test_1.wav")
+  r = sr.Recognizer()
+  m = sr.Microphone()
+
+  if ENRGY_THRESOHLD == 0:
+    r.dynamic_energy_threshold = True
+  else:
+    r.enrgy_threshold = ENRGY_THRESOHLD
+
+  with m as source:
+    r.adjust_for_ambient_noise(source)
+
+  stop_listening = r.listen_in_background(m, callback)
+  while True:
+    time.sleep(1)
