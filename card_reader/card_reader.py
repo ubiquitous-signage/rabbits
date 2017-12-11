@@ -16,12 +16,17 @@ class MyCardReader(object):
   def on_connect(self, tag):
     print("touched")
     self.idm = binascii.hexlify(tag.idm)
+    self.post(self.idm)
+    return True
+
+  def on_release(self, tag):
+    print("released")
     return True
 
   def read_id(self):
     clf = nfc.ContactlessFrontend('usb')
     try:
-      clf.connect(rdwr={'on-connect': self.on_connect})
+      clf.connect(rdwr={'on-connect': self.on_connect, 'on-release': self.on_release})
     finally:
       clf.close()
 
@@ -68,7 +73,5 @@ if __name__ == '__main__':
   while True:
     print("touch card:")
     cr.read_id()
-    print("released")
-    cr.post(cr.idm)
     # cr.updateLang(cr.idm)
     # print cr.idm
