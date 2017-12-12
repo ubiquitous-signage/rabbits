@@ -5,7 +5,8 @@ import json
 import signal
 import sys
 
-URL="http://localhost:9000/api/context"
+# URL="http://localhost:9000/api/context"
+URL="http://35.200.70.212:9000/api/context"
 
 class MyCardReader(object):
   map = {
