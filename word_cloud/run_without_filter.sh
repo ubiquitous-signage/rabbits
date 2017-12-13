@@ -1,3 +1,3 @@
 #!/bin/bash
 git pull
-python main.py
+python main.py off
