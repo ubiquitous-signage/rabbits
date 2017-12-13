@@ -7,6 +7,7 @@ import json
 import speech_recognition as sr
 import time
 import threading
+import sys
 
 ENRGY_THRESOHLD = 0 # associated with the perceived loudness of the sound; if 0, automatically ajjusted
 TIMEOUT_SEC = 4 # maximum number of seconds that this will allow a phrase to continue
@@ -14,6 +15,11 @@ LANGUAGE = 'ja-JP'
 
 # URL='http://localhost:9000/api/word-cloud'
 URL='http://35.200.70.212:9000/api/word-cloud'
+
+isFilter = True
+if sys.argv[1] == 'off':
+  isFilter = False
+
 
 def post(words):
   threadId = str(threading.get_ident())
@@ -48,7 +54,11 @@ def callback(r,audio):
       print('(' + threadId + ')could not analyze words')
       return True
     print('(' + threadId + ')recognized words: ' + str(words))
-    filtered_words = sensitive_filter.filter(words)
+    if isFilter:
+      filtered_words = sensitive_filter.filter(words)
+      print("filtered!")
+    else:
+      filtered_words = words
     print('(' + threadId + ')filterd words:    ' + str(filtered_words))
     post(filtered_words)
     return True
